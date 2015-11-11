@@ -1,0 +1,11 @@
+*.aux
+*.out
+*.synctex.gz
+*.toc
+*.lol
+*.fls
+*.idx
+*.log
+
+*.backup
+*.fdb_latexmk
