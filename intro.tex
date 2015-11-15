@@ -15,17 +15,13 @@ First, we control the speed of the DC motors using the current as input. Then, w
 Moreover, since we know that the traction will depend on a \emph{difference} of speeds, we also propose to simplify this scheme by modulating the speed of only one motor during the operation. One motor will be designated as ``master'': it will be controlled with a constant reference with the only goal of spinning at the setpoint speed as steadily as possible. The other will be designated as ``slave'': its reference will vary during operation in order to control the traction of the strip and it should have adequate transient response properties.
 
 \section{Structure of this report}
+This report will follow the chronological order of the work that was done during the labs. We used a bottom up approach where the inner loops are first implemented in order to then design the outer loops.
 
-The stucture of the report follows the same order as the work was done in the lab sessions.
+As stated before, to simplify the controller, only one motor -- the slave -- is controlled with a dynamic reference while the other -- the master -- is kept at a as steady as possible. In chapter \ref{chap:master} \todo{reference}, the dynamics of the master motor are identified and a controller is designed to achieve zero steady state error and perturbation rejection. Then, in chapter \ref{chap:slave} \todo{reference}, the dynamics of the slave motor are identified and a controller is designed to achieve reasonably fast reference tracking.
 
-As stated before, to simplify the system only one motor is controlled dynamically while the other, the master, is kept at a contstant velocity. Section \ref{} \todo{reference} describes the design a controller for this master.
+In chapter \ref{chap:traction} \todo{reference}, the relation between both motors' speed and the traction of the metallic strip is modelled and identified, and a controller is designed to stabilize the system and reduce the steady state error.
 
-After implementing a controller for the master, a controller was designed to control the speed of the slave motor. Section \ref{} \todo{reference} describes this process.
-
-Being able to control both motors the behaviour of the traction was identified and a control law for the process could be devised. In section \ref{} \todo{reference} this is described. \todo{rewording of this paragraph maybe (no inspiration)}
-
-
-
+Finally, ... \todo{What comes next?}
 
 
 
