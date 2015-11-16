@@ -10,3 +10,6 @@
 *.backup
 *.fdb_latexmk
 *.orig
+
+#overleaf
+*.fig

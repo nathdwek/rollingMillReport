@@ -19,8 +19,19 @@
 \usepackage{perpage}
 \MakePerPage{footnote}
 
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\tikzstyle{block} = [draw, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{square} = [draw, rectangle, minimum height=3em, minimum width=3em]
+\tikzstyle{sum} = [draw, circle, node distance=1cm]
+\tikzstyle{input} = [coordinate]
+\tikzstyle{output} = [coordinate]
+\tikzstyle{pinstyle} = [pin edge={to-,thin,black}]
+
+\usepackage{todonotes}
+
 \usepackage{xcolor}
 \definecolor{link}{HTML}{4078C0}
 \usepackage[colorlinks=true, allcolors = black, linktoc = all]{hyperref}
 
-\usepackage{todonotes}
+
