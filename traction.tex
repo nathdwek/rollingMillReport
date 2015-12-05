@@ -38,7 +38,7 @@ Furthermore, we also know that $G(s)$ should contain a close-to-perfect integrat
 
 Finally, we also see that a second order numerical approximation of the dynamics always yields a pole that is very close to zero. However this leads the rest of the optimisation problem to be badly conditioned. This means that the second pole is not reliably placed, and that the final result does not fit the real response accurately. Moreover, a system with zero very far from the origin takes a really long time to simulate with simulink.
 
-To solve this, we refine our gray-box approximation by introducing an integrator in the system, computing its response to $\tilde{\Delta_\omega}(t)$ and trying to determine the rest of the dynamics based on this new input and the observed response, as shown in figure \ref{fig:tractionGrayBox}, where $G(s) = \frac{1}{s}H(s)$.
+To solve this, we refine our gray-box approximation by introducing an integrator in the system, computing its response to $\tilde{\Delta_\omega}(t)$ and trying to determine the rest of the dynamics based on this new input and the observed response, as shown in figure \ref{fig:tractionGrayBox}, where $\frac{1}{s}H(s) = G(s)$. In the figure, we also utilized the fact that only $\omega_L$ contributes to $\tilde{\Delta_\omega}$, since the master velocity is chosen steady.
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[auto, node distance=2cm,>=latex']
@@ -49,14 +49,14 @@ To solve this, we refine our gray-box approximation by introducing an integrator
     \node [output, right of = strip](trac){};
 
     % Once the nodes are placed, connecting them is easy.
-    \draw [draw,->]  (input) -- node{${\tilde{\Delta_\omega}}$} (integrator);
-    \draw [draw,->]  (integrator) -- node{${\int^t_0\tilde{\Delta_\omega}}dt$} (strip);
+    \draw [draw,->]  (input) -- node{${\tilde{\omega_L}}$} (integrator);
+    \draw [draw,->]  (integrator) -- node{${\int^t_0\tilde{\omega_L}}dt$} (strip);
     \draw [draw,->] (strip) -- node {$\tilde{f}$} (trac);
 \end{tikzpicture}
 \caption{\label{fig:tractionInput}Gray-box model of the traction of the metallic strip\label{fig:tractionGrayBox}}
 \end{figure}
 
-Fitting a simple first order transfer function to $H(s)$ is not easy because the dynamics between $\frac{\tilde{\Delta_\omega}(s)}{s}$ and $F_R(s)$ is very fast, as shown in figure \ref{fig:tractionPulseStep}. This leads to very large poles which are not well approximated and difficult to simulate, as previously stated.
+Fitting a simple first order transfer function to $H(s)$ is not easy because the dynamics between $\frac{\tilde{\Omega_L}}{s}$ and $F_R(s)$ is very fast, as shown in figure \ref{fig:tractionPulseStep}. This leads to very large poles which are not well approximated and difficult to simulate, as we experienced already.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{tractionPulseStep.pdf}
