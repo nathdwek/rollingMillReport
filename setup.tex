@@ -15,5 +15,3 @@ To be perfectly rigorous, we should filter every input before sampling it. Howev
 \end{itemize}
 
 The other available filters either do not actually prevent aliasing, or have a too high passband attenuation. Even the two most adequate filters have a non ideal passband gain, and thus introduce a significant delay in the feedback loop. For this reason we choose not to use them in the inner loop, which should be fast, but rather in the outer loop. This is why only the two traction measurements are filtered in figure \ref{fig:wiring}.
-
-\section{Structure of the Matlab Code}
