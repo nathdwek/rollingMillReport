@@ -1,6 +1,20 @@
 \documentclass[11pt,english]{report}
 
+\usepackage{siunitx}
+\sisetup{range-phrase={ -- }}
+\sisetup{range-units=single}
+\usepackage{amsmath}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\usepackage{amssymb}
+
 \usepackage{fixltx2e}
+
+\usepackage{mathspec}
+\setallmonofonts[
+  AutoFakeSlant,
+  BoldItalicFeatures={FakeSlant},
+  ]{Inconsolata}
+
 \usepackage{polyglossia}
 \usepackage{microtype}
 
@@ -9,12 +23,6 @@
 \usepackage[hypcap]{caption}
 \graphicspath{ {pics/} }
 
-\usepackage{siunitx}
-\sisetup{range-phrase={ -- }}
-\sisetup{range-units=single}
-\usepackage{amsmath}
-\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
-\usepackage{amssymb}
 
 \usepackage{perpage}
 \MakePerPage{footnote}
@@ -30,11 +38,19 @@
 
 \usepackage{todonotes}
 
-\usepackage{xcolor}
-\definecolor{link}{HTML}{4078C0}
-\usepackage[colorlinks=true, allcolors = black, linktoc = all]{hyperref}
-
 \usepackage{placeins}
 
 \usepackage{booktabs}
 
+\usepackage{minted}
+\newminted{matlab}{
+  autogobble,
+  frame=lines,
+  framesep=2mm,
+  fontsize=\scriptsize,
+  mathescape
+}
+
+\usepackage{xcolor}
+\definecolor{link}{HTML}{4078C0}
+\usepackage[colorlinks=true, allcolors = black, linktoc = all]{hyperref}

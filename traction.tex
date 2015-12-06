@@ -38,18 +38,22 @@ Furthermore, we also know that $G(s)$ should contain a close-to-perfect integrat
 
 Finally, we also see that a second order numerical approximation of the dynamics always yields a pole that is very close to zero. However this leads the rest of the optimisation problem to be badly conditioned. This means that the second pole is not reliably placed, and that the final result does not fit the real response accurately. Moreover, a system with zero very far from the origin takes a really long time to simulate with simulink.
 
-To solve this, we refine our gray-box approximation by introducing an integrator in the system, computing its response to $\tilde{\Delta_\omega}(t)$ and trying to determine the rest of the dynamics based on this new input and the observed response, as shown in figure \ref{fig:tractionGrayBox}, where $\frac{1}{s}H(s) = G(s)$. In the figure, we also utilized the fact that only $\omega_L$ contributes to $\tilde{\Delta_\omega}$, since the master velocity is chosen steady.
+To solve this, we refine our gray-box approximation by introducing an integrator in the system, computing its response to $\tilde{\Delta_\omega}(t)$ and trying to determine the rest of the dynamics based on this new input and the observed response, as shown in figure \ref{fig:tractionGrayBox}, where $\frac{1}{s}H(s) = G(s)$. In the figure, we also utilized the fact that only $\omega_L$ is supposed to contribute to $\tilde{\Delta_\omega}$, since the master velocity is chosen steady. $\tilde{\omega_R}$ is thus considered as a disturbance.
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[auto, node distance=2cm,>=latex']
     % We start by placing the blocks
     \node [input](input){};
-    \node [square, right of = input, xshift = 1cm](integrator){$\frac{1}{s}$};
+    \node [sum, right of = input, xshift = 0.5cm](add){};
+    \node [input, above of = add, yshift = -0.8cm](disturb){};
+    \node [square, right of = add, xshift = 0cm](integrator){$\frac{1}{s}$};
     \node [block, right of = integrator, xshift = 2.5cm](strip){$H(s)?$};
     \node [output, right of = strip](trac){};
 
     % Once the nodes are placed, connecting them is easy.
-    \draw [draw,->]  (input) -- node{${\tilde{\omega_L}}$} (integrator);
+    \draw [draw,->]  (input) -- node{${\tilde{\omega_L}}$} node[pos = 0.9, below]{$-$} (add);
+    \draw [draw,->]  (disturb) -- node[pos = 0.2]{$d$} node[pos = 0.9]{$+$} (add);
+    \draw [draw,->]  (add) -- (integrator);
     \draw [draw,->]  (integrator) -- node{${\int^t_0\tilde{\omega_L}}dt$} (strip);
     \draw [draw,->] (strip) -- node {$\tilde{f}$} (trac);
 \end{tikzpicture}
@@ -71,3 +75,33 @@ To solve this, we tried to fit $H(s)$ with a transfer function of the form $K\fr
 \caption{Input, output, and simulated output of the traction of the metallic strip\label{fig:tracFit}}
 \end{figure}
 
+\section{Control of the Traction}
+\subsection{Simple P Controller}
+Since there already is an integrator in the system, and since we do not have specifications on the transient response, we first tried to control the traction with a simple P~controller, which should provide asymptotic stability and zero steady-state error. Figure \ref{fig:tracRLocus}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{rlocus_trac.pdf}
+  \caption{Root locus of the traction\label{fig:tracRLocus}}
+\end{figure}
+shows the root locus of the traction for this controller, with the approximation that the inner slave speed loop is fast enough to be considered perfectly transparent. The root locus shows that $k_P > 0$ can be theoretically chosen as high as desired while keeping the closed-loop poles on the real axis.
+
+Figure \ref{fig:simuPTot}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{simu_P_tot.pdf}
+  \caption{Simulation of the rolling mill operation with a P controller on the traction\label{fig:simuPTot}}
+\end{figure}
+shows the closed-loop traction response to a constant reference, with an arbitrary gain of $1$, as simulated by simulink. First, we observe that the closed-loop poles are not real, which is due to non linearities and higher order effects. More importantly, we see that the steady-state error is not cancelled.
+
+Comparing the measured traction and the master speed, we observe that the initial ramp on the master motor is not compensated. In steady state, the master speed also creates an offset on the traction. This is because the right velocity is actually a disturbance, as was shown in figure \ref{fig:tractionGrayBox}. This disturbance is not rejected because the integrator is in the plant, and not in the controller.
+
+To achieve perturbation rejection, an integrator should be added to the controller. However, this is not a good solution as is, because the open loop would then contain two integrators. This would greatly reduce the phase margin and thus make the closed loop system nearly unstable and slow its response down.
+
+\subsection{Second Loop: PI Controller}
+Rather then adding an integrator to the existing controller, we can add a second external loop with a PI, as shown in figure \ref{fig:simulinkTot}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{simulink.png}
+  \caption{Final controller architecture\label{fig:simulinkTot}}
+\end{figure}
+,to achieve perturbation rejection while preserving the phase margin. In this section, the reasoning behind this second loop will be explained. In the following

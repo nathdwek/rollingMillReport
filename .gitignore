@@ -6,6 +6,7 @@
 *.fls
 *.idx
 *.log
+_minted-main/
 
 *.backup
 *.fdb_latexmk
