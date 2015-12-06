@@ -1,126 +1,109 @@
-This chapter describes all the steps that were taken in the design of a controller for the master motor of the rolling mill plant. Along the way all the design choices will be explained and substantiated.
+In this chapter, we will identify and design a controller for the master motor of the rolling mill. During the operation, this motor will be controlled with a constant reference and it should keep its velocity as steady as possible.
 
 \section{Master motor}
-The master motor is the one that pulls the strip and winds it up on a spool. The left motor was chosen as master since its RPM at working current is higher than the right motor.  This is necessary since when the strip is compressed to reduce its thickness it extends. The speed of the winding motor needs to be higher than the feeding motor. Figure \ref{fig:LM_RPM_curr} shows a plot of the motor characteristics and table \ref{tab:LM_operating_region} shows the currents for different operating points.
+The master motor is the one that pulls the strip and winds it up on a spool. The left motor was chosen as master since its setpoint velocity is higher than that of the right motor. This is necessary since when the strip is compressed to reduce its thickness it extends, which means the speed of the winding motor should be higher than the feeding motor. Figure \ref{fig:LM_RPM_curr} shows the static characteristic of the left motor and table \ref{tab:LM_operating_region} shows the currents and speed for different operating points.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width = .7\textwidth]{pics/LM_RPM_Current.png}
-\caption{Rotational Velocity of the Left motor in function of the Current}
-\label{fig:LM_RPM_curr}
+\includegraphics[width = .6\textwidth]{pics/LM_RPM_Current.png}
+\caption{Static characteristic of the left motor\label{fig:LM_RPM_curr}}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[htbp]
 	\centering
-		\begin{tabular}{c|c}
-        \toprule
-			Armature current [A] & Angular velocity [RPM] \\ \midrule
-            5.4 & 530.7 \\
-            5.7 & 649.8 \\
-		\end{tabular}
-	\caption{Operating points of the left motor}
-	\label{tab:LM_operating_region}
+	\begin{tabular}{rr}
+    \toprule
+		Armature current [A] & Angular velocity [RPM] \\ \midrule
+    5.4 & 530.7 \\
+    5.7 & 649.8 \\\bottomrule
+	\end{tabular}
+	\caption{Operating points of the left motor\label{tab:LM_operating_region}}
 \end{table}
 
-\FloatBarrier
-\section{Identifying the transfer function}
+\section{Identification of the Transfer Function}
+The transfer function of the left motor is identified with a least square approximation using matlab. To do this, the measured velocity is sampled for an input step between the setpoints, since that is the region where we want to linearize the behaviour of the motor. We choose to fit the system with a first order transfer function which is common for a DC motor with big inertial load.
 
-The transfer function of the left motor was identified using matlab. To do this, velocity was sampled for a step input. Since the motor works around a given operating region, it was started from the lower setpoint current and an the step increased the current to the higher setpoint. The transient from stopped to the operating is not very interesting. The behaviour of the change in velocity was used to calculate a transfer function using the least squares method. 
+Figure \ref{fig:LM_id} shows the measured and fitted step responses. We see that the system is indeed heavily dominated by a single slow real pole, and that it is well approximated by transfer function \ref{eq:LM_TF}.
 
-Figure \ref{fig:LM_id} shows the sampled data points and the curve that corresponds to the transfer function of the left motor (equation \ref{eq:LM_TF}).
-
-\begin{align}
-	G(s) = \frac{5.398}{3.642S+1}
-    \label{eq:LM_TF}
-\end{align}
+\begin{equation}
+	LM(s) = \frac{5.398}{3.642S+1}
+  \label{eq:LM_TF}
+\end{equation}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{identification_step_setpoints.png}
-\caption{Sampled data with the fitted curve from the calculated transfer function}
-\label{fig:LM_id}
+\caption{Sampled and fitted step response of the left motor\label{fig:LM_id}}
 \end{figure}
 
-\FloatBarrier
-\section{Controller design}
-This controller needs to be able to keep the master velocity stable and constant. A PI controller has been chosen to control this motor. 
+\section{Design of a PI Controller}
+The master motor is controlled with a constant reference and should keep its velocity as steady as possible despite possible disturbance. For this reason, we choose to control it with a PI controller, which should provide asymptotic stability, zero steady state error, and perturbation rejection.
 
-To design this PI controller the root locus method has been used. The zero of the PI controller was used to cancel the pole of the transfer function of the left motor. This was done as follows:
+We use the root locus method to tune the PI controller. First we choose $\frac{K_I}{K_P}$ so that the zero of the controller cancels the pole of the motor. This theoretically ensures that the closed loop has a single negative real pole that can then be arbitrarily placed by adjusting $K_P$. In the following, we detail the calculations used to determine the gains using this method.
 
-The transfer function for the left motor was transformed to make the pole location visible.
-\begin{align}
-	G(s) &= \frac{5.398}{3.642S+1} \\[12pt]
-    &= \frac{1.482}{s+0.274} \nonumber
-\end{align}
+First, the transfer functions of the left motor and the PI controller are transformed to make the poles and zeroes immediately visible.
+\begin{align*}
+	LM(s) &= \frac{5.398}{3.642s+1}\\
+				&= \frac{1.482}{s+0.274}\\
+\\PI(s) &= K_p + \frac{K_i}{s}\\
+    		&= K_p \cdot \frac{s+\frac{K_i}{K_p}}{s}
+\end{align*}
+To cancel the pole of the motor, we hence use $\frac{K_i}{K_p} = 0.294$.
 
-The same was done for the PI controller so that the zero location becomes easily visible.
-\begin{align}
-    C(s) &= K_p + \frac{K_i}{s}\\[12pt]
-    &= K_p \left(\frac{s+\frac{K_i}{K_p}}{s} \right) \nonumber
-\end{align}
+We then choose $K_P$ using a root locus. The open loop is given by:
+\begin{align*}
+    OL(s) &= \frac{1.482}{s+0.274} \cdot \frac{s+0.274}{s} \\
+					&= \frac{1.482}{s}
+\end{align*}
 
-To use the zero to compensate the pole of the left motor the nominator of the controller $C(s)$ needs to be the same of the denominator of the left motor $G(s)$. This means that $\frac{K_i}{K_p} = 0.294$
-
-Using these previous equations $K_p$ can be chosen using the root locus tool from matlab. The total system, without $K_p$ equates to:
-
-\begin{align}
-    Sys(s) &= \frac{1.482}{s+0.274} \cdot \frac{s+0.274}{s} \\[12pt]
-     &= \frac{1.482}{s}
-\end{align}
-
-Entering this system in the matlab root locus tool provides us with the  root locus plot seen on figure \ref{fig:LM_rl}. The gain can be chosen arbitrarily, but larger than 0.
-
+Figure \ref{fig:LM_rl}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = .7\textwidth]{pics/LM_cont_rlocus.png}
-\caption{Root locus plot for the left motor with a PI controller}
-\label{fig:LM_rl}
+\caption{Root locus plot for the left motor with a PI controller\label{fig:LM_rl}}
 \end{figure}
+shows that $K_P > 0$ can theoretically be chosen arbitrarily. Non linearities, higher order effects and actuator saturation will determine its ideal value.
 
-Several different values were used in simulation in simulink (figure \ref{fig:LM_SIM_KP050}, figure \ref{fig:LM_SIM_KP144} and figure \ref{fig:LM_SIM_KP200})
-
-
+Figures \ref{fig:LM_SIM_KP050} -- \ref{fig:LM_SIM_KP200}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{pics/LM_KP050_Sim.png}
 \caption{Simulink simulation of the left motor behaviour for $K_p = 0.5$}
 \label{fig:LM_SIM_KP050}
 \end{figure}
-
+%
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{pics/LM_KP144_Sim.png}
 \caption{Simulink simulation of the left motor behaviour for $K_p = 1.44$}
 \label{fig:LM_SIM_KP144}
 \end{figure}
-
+%
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{pics/LM_KP200_sim.png}
 \caption{Simulink simulation of the left motor behaviour for $K_p = 2$}
 \label{fig:LM_SIM_KP200}
 \end{figure}
+show the result of simulink simulations for several values of $K_P$. We see that actuator saturation will probably not be the deciding constraint\footnote{The blue curve represents the small signal input on each of the plots. The setpoint value is \SI{2.7}{V} and the input range is [\SI{-10}{V} - \SI{10}{V}].}. We thus need to implement the controller to be able to experimentally tune its gain.
 
 \FloatBarrier
-
-Using the previous equations and calculated values, a discrete time PI controller could be implemented in matlab using the DAQ system.
-
-The controller was tested in practice for different values of the $K_p$ (see figure \ref{fig:LM_KP050}, figure \ref{fig:LM_KP144} and figure \ref{fig:LM_KP200}). Based on these measurements $K_p = 1.44$ was chosen. $K_p = 0.5$ has a quite long settling time with a larger overshoot than $K_p = 1.44$.  Since $\frac{K_i}{K_p} = 0.294$, $K_i = 0.3954$. In none of the simulations is there overshoot present while all of the practical experiments do. This is because the transfer function of the motor was reduced to a first order system while in practice it behaves as a non linear system of higher order. 
-
+\section{Tuning of the PI Controller}
+Figures \ref{fig:LM_KP050} -- \ref{fig:LM_KP200} show experimental runs of the master motor with different values of $K_P$. Based on these measurements $K_P = 1.44$ was chosen. $K_P = 0.5$ has a longer settling time with a larger overshoot than $K_p = 1.44$, and $K_P = 0.5$ has a longer, higher overshoot.  Since $\frac{K_I}{K_P} = 0.294$, $K_I = 0.3954$. None of the simulations have overshoot while all the practical experiments do. This is because the transfer function of the motor was reduced to a first order system while in practice it behaves as a non linear system of higher order.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = .7\textwidth]{pics/LM_KP050a.png}
 \caption{Response of the left motor behaviour for $K_p = 0.5$ to the red curve as input.}
 \label{fig:LM_KP050}
 \end{figure}
-
+%
 \begin{figure}[htbp]
 \centering
-\includegraphics[width = .7\textwidth]{pics/LM_KP144.png}
+\includegraphics[width = \textwidth]{pics/LM_KP144.png}
 \caption{Response of the left motor behaviour for $K_p = 1.44$ to the red curve as input.}
 \label{fig:LM_KP144}
 \end{figure}
-
+%
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = .7\textwidth]{pics/LM_KP200.png}
@@ -128,8 +111,11 @@ The controller was tested in practice for different values of the $K_p$ (see fig
 \label{fig:LM_KP200}
 \end{figure}
 
-\section{Conclusions}
-For the controller of the whole plant cascade control was chosen with a grey box approach. The left motor was designated as the master motor. So first this motor was identified using the step response around the operating point. 
-
-After the system had been identified a controller could be devised to control the velocity of the motor. A PI controller was chosen to keep the velocity stable and to reject disturbances. The PI controller was designed to cancel the pole of the transfer function of the motor. Multiple values of the feedback gain were simulated and tested in practice. Finally $K_p = 1.44$ was chosen to be used in the final plant controller.
-
+We observe that we indeed obtain zero steady state error, and that disturbances of order higher than 1 seem to not affect the master velocity too much, which is very good.
+\section{Conclusion}
+We decide to control the master motor with a PI controller and the following values:
+\begin{align*}
+	K_P = 1.44
+	K_I = 0.3954
+\end{align*}
+This allows us to generate a steady, precise master speed around which we will then modulate the slave speed in order to control the traction of the metallic strip. In the next chapter, we will identify and design a controller for the slave motor, which will serve as an inner loop for the traction control.
