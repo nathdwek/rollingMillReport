@@ -1,5 +1,5 @@
 \section{Modelling of the Traction of the Metallic Strip}
-As we said in the introduction, we know from a physical intuition that the traction in the metallic strip depends mainly on the difference of speed between the rolls, rather than on each of the speeds individually. For this reason, we only have to determine $G(p)$ as described in figure \ref{fig:tractionInput}, where $\omega_i$ is the speed of a motor, and $t$ is the traction of the metallic strip.
+As presented in the introduction, we know from a physical intuition that the traction in the metallic strip depends mainly on the difference of speed between the rolls, rather than on each of the speeds individually. For this reason, we only have to determine $Trac(s)$ as described in figure \ref{fig:tractionInput}, where $\omega_i$ is the speed of a motor, and $f$ is the traction of the metallic strip\footnote{Since we do not control the middle pair of rolls, we are not able to control the left and right traction separately. For this reason, in the following, we only care about controlling the right traction, which is denoted $f$ but sometimes $f_R$ in the matlab figures. With this setup, the left traction has roughly the same evolution as the right traction, multiplied by a coefficient slightly lower than $1$.}.
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[auto, node distance=2cm,>=latex']
@@ -18,27 +18,27 @@ As we said in the introduction, we know from a physical intuition that the tract
     \draw [draw,->] (vr) node [yshift = 3mm]{$\omega_R$} -| node [pos = 0.9]{$+$} (sum);
     \draw [draw,->] (vl) node [yshift = 3mm]{$\omega_L$} -| node [pos = 0.9]{$-$} (sum);
     \draw [draw,->] (sum) -- node {$\Delta_\omega$} node[pos = 0.9]{$+$}  (addspeedsetpoint);
-    \draw [draw,->] (speed0) -- node{${\Delta_\omega}_0$} node [pos = 0.9]{$-$} (addspeedsetpoint);
+    \draw [draw,->] (speed0) -- node{${\Delta_\omega}_0$} node [pos = 0.9, right]{$-$} (addspeedsetpoint);
     \draw [draw,->]  (addspeedsetpoint) -- node{${\tilde{\Delta_\omega}}$} (strip);
     \draw [draw,->] (strip) -- node {$\tilde{f}$} node[pos = 0.9]{$+$} (addtracsetpoint);
-    \draw [draw,->] (tracsetpoint) -- node {$f_0$} node[pos = 0.9]{$+$} (addtracsetpoint);
+    \draw [draw,->] (tracsetpoint) -- node {$f_0$} node[pos = 0.9, right]{$+$} (addtracsetpoint);
     \draw [draw,->] (addtracsetpoint) -- node {$f$} (trac);
 
 \end{tikzpicture}
 \caption{\label{fig:tractionInput}Simple gray-box model of the traction of the metallic strip}
 \end{figure}
 
-Furthermore, we also know that $G(s)$ should contain a close-to-perfect integrator. Indeed, if we increase $\Delta_\omega$ slightly from the setpoint ${\Delta_\omega}_0$, we expect the tension in the metallic strip to rise indefinitely until breakage. This is also confirmed by the experience: we observe that the system's response to a real world pulse is really close to a step, as showed in figure \ref{fig:tracImpulseResponse}.
-
+Furthermore, we also know that $Trac(s)$ should contain a close-to-perfect integrator. Indeed, if we increase $\Delta_\omega$ slightly from the setpoint ${\Delta_\omega}_0$, we expect the tension in the metallic strip to rise indefinitely until breakage. This is also confirmed by the experience: we observe that the system's response to a real world pulse is really close to a step, as showed in figure \ref{fig:tracImpulseResponse}.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{tractionPulse.pdf}
 \caption{Traction response to a real world pulse\label{fig:tracImpulseResponse}}
 \end{figure}
+Finally, this is supported by a second order numerical approximation of the dynamics, which always yields a pole that is very close to zero.
 
-Finally, we also see that a second order numerical approximation of the dynamics always yields a pole that is very close to zero. However this leads the rest of the optimisation problem to be badly conditioned. This means that the second pole is not reliably placed, and that the final result does not fit the real response accurately. Moreover, a system with zero very far from the origin takes a really long time to simulate with simulink.
+However, this leads the rest of the optimisation problem to be badly conditioned. This means that the second pole is not reliably placed, and that the final result does not fit the real response accurately. Moreover, the obtained transfer function, with a very large $K$ and $p_2$, takes a long time to simulate with simulink.
 
-To solve this, we refine our gray-box approximation by introducing an integrator in the system, computing its response to $\tilde{\Delta_\omega}(t)$ and trying to determine the rest of the dynamics based on this new input and the observed response, as shown in figure \ref{fig:tractionGrayBox}, where $\frac{1}{s}H(s) = G(s)$. In the figure, we also utilized the fact that only $\omega_L$ is supposed to contribute to $\tilde{\Delta_\omega}$, since the master velocity is chosen steady. $\tilde{\omega_R}$ is thus considered as a disturbance.
+To solve this, we refine our gray-box approximation by artificially introducing an integrator in the system we want to identify. We then compute its response to $\tilde{\Delta_\omega}(t)$ and try to determine the rest of the dynamics based on this new input and the observed response, as shown in figure \ref{fig:tractionGrayBox}, where $\frac{1}{s}\cdot H(s) = Trac(s)$. In the figure, we also use the fact that only $\omega_L$ is supposed to contribute to $\tilde{\Delta_\omega}$, since the master velocity is chosen steady. $\tilde{\omega_R}$ is thus considered as a disturbance.
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[auto, node distance=2cm,>=latex']
