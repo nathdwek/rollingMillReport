@@ -9,7 +9,7 @@ As presented in the introduction, we know from a physical intuition that the tra
     \node [input, left of = sum, yshift = -1cm](vl) {};
     \node [sum, right of = sum, xshift = 1cm](addspeedsetpoint){};
     \node [input, below of = addspeedsetpoint](speed0){};
-    \node [block, right of = addspeedsetpoint, xshift = 1cm](strip){$G(s)?$};
+    \node [block, right of = addspeedsetpoint, xshift = 1cm](strip){$Trac(s)?$};
     \node [sum, right of = strip, xshift = 2cm](addtracsetpoint){};
     \node [input, below of = addtracsetpoint](tracsetpoint){};
     \node [output, right of = addtracsetpoint](trac){};
@@ -57,18 +57,21 @@ To solve this, we refine our gray-box approximation by artificially introducing 
     \draw [draw,->]  (integrator) -- node{${\int^t_0\tilde{\omega_L}}dt$} (strip);
     \draw [draw,->] (strip) -- node {$\tilde{f}$} (trac);
 \end{tikzpicture}
-\caption{\label{fig:tractionInput}Gray-box model of the traction of the metallic strip\label{fig:tractionGrayBox}}
+\caption{Gray-box model of the traction of the metallic strip\label{fig:tractionGrayBox}}
 \end{figure}
 
-Fitting a simple first order transfer function to $H(s)$ is not easy because the dynamics between $\frac{\tilde{\Omega_L}}{s}$ and $F_R(s)$ is very fast, as shown in figure \ref{fig:tractionPulseStep}. This leads to very large poles which are not well approximated and difficult to simulate, as we experienced already.
+Fitting a simple first order transfer function to $H(s)$ is not easy because the dynamics between $\int_0^t\tilde{\omega_L}(t)$ and $f(t)$ is very fast, as shown in figure \ref{fig:tractionPulseStep}. This leads to very large poles which are not well approximated and difficult to simulate, as experienced previously.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{tractionPulseStep.pdf}
 \caption{Right traction response to a pulse and output of the intermediate integrator\label{fig:tractionPulseStep}}
 \end{figure}
 
-To solve this, we tried to fit $H(s)$ with a transfer function of the form $K\frac{s-z_0}{s-p_0}$, because the introduction of a zero speeds up a step response, which would bring $p_0$ reasonably closer to the origin. The result is shown in figure \ref{fig:tracFit}, where we see that the following transfer function seems to fit the experience very well.
-\[H(s) = 13.096\frac{s+0.9221}{s(s+4.063)}\]
+To solve this, we try to fit $H(s)$ with a transfer function of the form $K\frac{s-z_1}{s-p_2}$, because the introduction of a zero speeds up a step response, which would bring $p_2$ reasonably closer to the origin. The result is shown in figure \ref{fig:tracFit}, where we see that $Trac(s)$ as given in equation \ref{eqn:tracS} seems to fit the experience very well.
+\begin{align*}
+  H(s) &= 13.096\cdot\frac{s+0.9221}{s+4.063}\\
+  Trac(s) &= 13.096\cdot\frac{s+0.9221}{s(s+4.063)}\numberthis\label{eqn:tracS}
+\end{align*}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{tracFit.pdf}
@@ -77,13 +80,13 @@ To solve this, we tried to fit $H(s)$ with a transfer function of the form $K\fr
 
 \section{Control of the Traction}
 \subsection{Simple P Controller}
-Since there already is an integrator in the system, and since we do not have specifications on the transient response, we first tried to control the traction with a simple P~controller, which should provide asymptotic stability and zero steady-state error. Figure \ref{fig:tracRLocus}
+Since there already is an integrator in the system, and since we do not have specifications on the transient response, we first try to control the traction with a simple P~controller, which should provide asymptotic stability and zero steady-state error. Figure \ref{fig:tracRLocus}
 \begin{figure}[htbp]
   \centering
   \includegraphics[width = \textwidth]{rlocus_trac.pdf}
   \caption{Root locus of the traction\label{fig:tracRLocus}}
 \end{figure}
-shows the root locus of the traction for this controller, with the approximation that the inner slave speed loop is fast enough to be considered perfectly transparent. The root locus shows that $k_P > 0$ can be theoretically chosen as high as desired while keeping the closed-loop poles on the real axis.
+shows the root locus of the traction for this controller, with the approximation that the inner slave speed loop is fast enough to be considered perfectly transparent. The root locus shows that $k_P < 0$\footnote{The $\tilde{\omega_L}$ input is inverting, as shown in figure \ref{fig:tractionGrayBox}} can be theoretically chosen as high as desired while keeping the closed-loop poles on the real axis.
 
 Figure \ref{fig:simuPTot}
 \begin{figure}[htbp]
@@ -91,7 +94,7 @@ Figure \ref{fig:simuPTot}
   \includegraphics[width = \textwidth]{simu_P_tot.pdf}
   \caption{Simulation of the rolling mill operation with a P controller on the traction\label{fig:simuPTot}}
 \end{figure}
-shows the closed-loop traction response to a constant reference, with an arbitrary gain of $1$, as simulated by simulink. First, we observe that the closed-loop poles are not real, which is due to non linearities and higher order effects. More importantly, we see that the steady-state error is not cancelled.
+shows the closed-loop traction response to a constant reference, with an arbitrary gain of $-1$, as simulated by simulink. First, we observe that the closed-loop poles are not real, which is due to non linearities and higher order effects. More importantly, we see that the steady-state error is not cancelled.
 
 Comparing the measured traction and the master speed, we observe that the initial ramp on the master motor is not compensated. In steady state, the master speed also creates an offset on the traction. This is because the right velocity is actually a disturbance, as was shown in figure \ref{fig:tractionGrayBox}. This disturbance is not rejected because the integrator is in the plant, and not in the controller.
 
