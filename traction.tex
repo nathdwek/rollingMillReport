@@ -107,4 +107,69 @@ Rather then adding an integrator to the existing controller, we can add a second
   \includegraphics[width = \textwidth]{simulink.png}
   \caption{Final controller architecture\label{fig:simulinkTot}}
 \end{figure}
-,to achieve perturbation rejection while preserving the phase margin. In this section, the reasoning behind this second loop will be explained. In the following
+,to achieve perturbation rejection while preserving the phase margin. In this subsection, the reasoning behind this second loop will be explained. In the following, we do not neglect the effect of the inner slave speed loop anymore. However, we do make the approximation that the traction is a essentially an integrator\footnote{Neglecting the higher order zeroes and poles in $Trac(s)$ given in equation~\ref{eqn:tracS}, we obtain $Trac_{approx}(s) = \frac{7.16}{s}$.}. The plant that is controlled using an inner P and an outer PI is thus approximated by the series of the closed loop transfer function of the slave motor and an integrator -- the transfer function of the traction.
+
+With that in mind, the closed loop poles of the inner traction loop are given by figure~\ref{fig:rmTracLocus}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{rmTrac_locus.pdf}
+  \caption{Root locus of the inner traction loop\label{fig:rmTracLocus}}
+\end{figure}
+,which shows the root locus of $Slave(s) \cdot Trac_{approx}(s)$. We observe that using a P controller, it is possible to move the integrator pole into the LHP, which is the essence of feedback control. This is the reason why we can now afford to add a PI outer loop: for an adequate choice of ${K_p}_{inner}$, the plant, which is given by closed loop transfer function of the inner traction loop, can have two real, negative poles. This means that adding a PI to it will ensure a reasonable phase margin, as well as zero steady state error and perturbation rejection.
+
+On figure \ref{fig:rmTracLocus} we choose ${K_p}_{inner} \lessapprox 0.15$ to obtain the fastest possible real poles for the inner loop. This yields a pair of real poles around $-2$. There is now left to determine the gains of the outer PI, given those inner loop poles to complete the controller design of our rolling mill.
+
+To do so, we use the classical approach of cancelling the slowest pole in the plant with the zero from the PI, and then determining a first ${K_p}_{outer}$ with a root locus. The resulting plot is shown in figure \ref{fig:rlocus_OuterTrac}.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{rlocus_outerTrac.pdf}
+  \caption{Root locus of the outer traction loop\label{fig:rlocus_OuterTrac}}
+\end{figure}
+From the root locus, we can extract two reasonable first values: ${K_p}_{outer} \lessapprox 0.52$ would provide the fastest real poles and ${K_p}_{outer} \approx 0.93$ would provide a damping of $0.7$ -- any value inbetween could also be a good first choice. $K_i$ is then determined accordingly using $K_i = |z_{PI}| \cdot {K_P}_{outer}$. The root locus also shows us that if the poles of the inner loop are not perfectly known and $z_{PI}$ cannot be placed perfectly, ${p_{inner}}_{fast}<\nobreak z_{PI}<\nobreak{p_{inner}}_{slow}$ is better than ${p_{inner}}_{fast}<\nobreak{p_{inner}}_{slow}<\nobreak z_{PI}$
+, because the latter pole-zero configuration would make the closed loop poles leave the real axis, as shown in figure \ref{fig:rlocus_outerTrac_bad}.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = .8\textwidth]{rlocus_outerTrac_bad.pdf}
+  \caption{Root locus of the outer traction loop with a bad pole-zero configuration\label{fig:rlocus_outerTrac_bad}}
+\end{figure}
+
+With this controller, we should be able to move the integrating pole from the plant to the controller. The total closed loop should thus be stable and have zero steady-state error, perturbation rejection and a reasonable phase margin. In the following section, we will verify this design using simulink simulations and real world experiences and tune the gains if necessary.
+
+\section{Tuning of the PI Controller}
+Figure~\ref{fig:simu_tot_k06}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{simu_tot_k06.pdf}
+  \caption{Simulation of the rolling mill operation with a P - PI controller on the traction. ${K_p}_{outer} = 0.6$.\label{fig:simu_tot_k06}}
+\end{figure}
+shows the the simulated output of the rolling mill with the following gains:
+\begin{align*}
+  {K_p}_{inner} &= -0.14\\
+  {K_p}_{outer} &= 0.6\\
+  K_i &= 1.26
+\end{align*}
+
+We see that all the desired properties are achieved. However, the effect of the master speed ramp is still present, which is normal since a single integrator in the controller is able to reject perturbation of order $\leq 1$. This is supported by the experience, as shown in figure~\ref{fig:totalOut_k_0327_t_3}.
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{totalOut_k_0327_t_3.pdf}
+  \caption{Operation of the rolling mill. ${K_p}_{outer} = 0.327$.\label{fig:totalOut_k_0327_t_3}}
+\end{figure}
+
+As a result, the controller should be tuned first and foremost to limit the overshoot induced by the initial ramp, because a measured traction $>\nobreak\SI{6}{V}$ is dangerous for the plant. We should thus increase ${K_P}_{outer}$ until the traction overshoot is low enough, and then check if the resulting lower damping is still satisfying.
+
+Fortunately, figure~\ref{fig:totalOut_k_2_t_3}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{totalOut_k_2_t_3_ramp.pdf}
+  \caption{Operation of the rolling mill. ${K_p}_{outer} = 2$.\label{fig:totalOut_k_2_t_3}}
+\end{figure}
+shows that values \ref{eqn:final_begin} - \ref{eqn:final_end}
+\begin{figure*}[htbp]
+\begin{align}
+  {K_p}_{inner} &= -0.14\label{eqn:final_begin}\\
+  {K_p}_{outer} &= 2\\
+  K_i &= 4.2\label{eqn:final_end}
+\end{align}
+\end{figure*}
+along with an initial ramp on the traction provide an acceptable overshoot and sufficient damping.
