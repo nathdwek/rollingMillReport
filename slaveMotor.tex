@@ -42,7 +42,9 @@ The transfer function was identified the same way the master motor was done: ste
 
 \FloatBarrier
 \section{Controller Design}
-The controller for this motor needs to be fast enough to be able to keep the tension of the strip constant despite disturbances. To do this a proportional controller with gain $K$ was chosen. Figure \ref{fig:RM_rlocus} shows a root locus plot for the right motor. The gain can again be chosen arbitrarily.$K$ was chosen based on a couple simulations (figures \ref{fig:RM_K2_SIM}, \ref{fig:RM_K3_SIM} and \ref{fig:RM_K4_SIM}) and  practical experiments for different gains (figures \ref{fig:RM_K2}, \ref{fig:RM_K3} and \ref{fig:RM_K4}). None of the simulations have overshoot while some of the practical experiments do (depending on $K$). This is because the transfer function of the motor was reduced to a first order system while in practice it probably as a non-linear system.
+The controller for this motor needs to be fast enough to be able to keep the tension of the strip constant despite disturbances. To do this a proportional controller with gain $K$ was chosen. A proportional controller has a steady state error, but in this case this is negligible because this controller is part of a larger cascade controller.
+
+Figure \ref{fig:RM_rlocus} shows a root locus plot for the right motor. The gain can again be chosen arbitrarily.$K$ was chosen based on a couple simulations (figures \ref{fig:RM_K2_SIM}, \ref{fig:RM_K3_SIM} and \ref{fig:RM_K4_SIM}) and  practical experiments for different gains (figures \ref{fig:RM_K2}, \ref{fig:RM_K3} and \ref{fig:RM_K4}). None of the simulations have overshoot while some of the practical experiments do (depending on $K$). This is because the transfer function of the motor was reduced to a first order system while in practice it probably as a non-linear system.
 
 \begin{figure}[htbp]
 \centering
@@ -100,3 +102,7 @@ A gain of $K = 3$ was used since using a higher gain has the risk of putting cur
 \end{figure}
 
 
+\section{Conclusions}
+A proportional controller was chosen to have a fast response to disturbances. The fact that there can be a steady state error is less important since this loop is controlled by another feedback loop. The outer loop will be able to compensate for the steady state error.
+
+As we did for the other motor, the behaviour was identified using a step between two operating points. Starting from the obtained transfer function some simulations and experiments were done with proportional control. Finally a gain of $K = 3$ was selected. 

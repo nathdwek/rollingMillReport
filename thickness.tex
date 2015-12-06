@@ -1,0 +1,34 @@
+In this section some considerations will be made about the more advanced objectives. Since the more advanced objectives are not attainable in the course of the lab sessions only some theoretical reflections will be made. The more advanced objective was to design a controller to control the thickness of the rolled metal strip.
+
+\section{Workings}
+The full workings of the mill are as follows: One motor unwinds the metal strip from a spool. The metal strip passes between two cylinders driven by a second motor. The metal is compressed between these too cylinders and is subsequently wound up by the third motor. The thickness is controlled by the distance between the two rolls. This distance can be controlled manually by a crank.
+
+We have three motors as actuators, one manual setting, and multiple sensors: 
+\begin{itemize}
+\item Thickness sensor before the rolls
+\item Thickness sensor after the rolls
+\item Traction sensor before the rolls
+\item Traction sensor after the rolls
+\item Velocity sensors for each of the motors
+\item Rolling force sensor
+\end{itemize}
+
+The reasons the objective is not attainable are that de DAQ has not enough outputs, and the complex relation between the thickness and the parameters of the actuators.
+
+\section{Controller considerations}
+
+The broad design of the controller will again be a gray-box approach using a cascade controller since it is almost impossible to model the behaviour of the motors and rolling using the physical relations.
+
+Instead of designating one of the winding motors as master now the central rolling motor is designated as master. This motor should be controlled using a PI controller to keep its velocity constant and disturbance free. The two other motors should use a proportional controller to have a fast response to their reference inputs.
+
+Both the slave motors will be controlled so they match the speed of the master motor while keeping the tension at a certain value.
+
+The most outer loop sets the speed and the tension using a lookup table with the relation of all the parameters such as the speed, thickness of the metal strip, rolling force and tension. 
+
+
+
+
+
+
+
+

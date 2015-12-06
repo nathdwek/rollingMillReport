@@ -17,8 +17,10 @@ Moreover, since we know that the traction will depend on a \emph{difference} of 
 \section{Structure of this report}
 First, in chapter \ref{chap:setup}, we describe the experimental setup which was used throughout this project. This report will then follow the chronological order of the work that was done during the labs. We used a bottom up approach where the inner loops are first implemented in order to then design the outer loops.
 
-As stated before, to simplify the controller, only one motor -- the slave -- is controlled with a dynamic reference while the other -- the master -- is kept at a speed which should be as steady as possible. In chapter \ref{chap:masterMotor}, the dynamics of the master motor are identified and a controller is designed to achieve zero steady state error and perturbation rejection. Then, in chapter \ref{chap:slaveMotor} \todo{reference}, the dynamics of the slave motor are identified and a controller is designed to achieve reasonably fast reference tracking.
+As stated before, to simplify the controller, only one motor -- the slave -- is controlled with a dynamic reference while the other -- the master -- is kept at a speed which should be as steady as possible. In chapter \ref{chap:masterMotor}, the dynamics of the master motor are identified and a controller is designed to achieve zero steady state error and perturbation rejection. Then, in chapter \ref{chap:slaveMotor}, the dynamics of the slave motor are identified and a controller is designed to achieve reasonably fast reference tracking.
 
 In chapter \ref{chap:traction}, the relation between both motors' speeds and the traction of the metallic strip is modelled and identified, and a controller is designed to stabilize the system and reduce the steady state error.
 
-Finally, ... \todo{What comes next?}
+Finally, chapter \ref{chap:thickness} describes some considerations in controlling the thickness when rolling the metal strip. Since this objective is not attainable in the course of the lab sessions due to other constraints and complexity this will be done theoretically.
+
+In appendix \ref{chap:code} the matlab code for the controller can be found.
