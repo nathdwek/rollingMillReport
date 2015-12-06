@@ -39,13 +39,9 @@ function [time, reference, output, input, innerTractionRefArray, rSpeedRefArray]
     output = zeros(2, nSamples);
     input = zeros(8, nSamples);
   end
-
-
-  [nSamples, time, reference, output, input] = referenceGenerator();
-  %precompute the reference and generate arrays of according size
-  innerTractionRefArray = zeros(1,nSamples);
-  rSpeedRefArray = zeros(1,nSamples);
-
+\end{matlabcode}
+\clearpage
+\begin{matlabcode}
   %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %Controllers
@@ -101,11 +97,17 @@ function [time, reference, output, input, innerTractionRefArray, rSpeedRefArray]
     innerTractionRef = K*(error) + KI*errorIntegral;
   end
 
+\end{matlabcode}
+\clearpage
+\begin{matlabcode}
   %%
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %Main Loop
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+  [nSamples, time, reference, output, input] = referenceGenerator();
+  %precompute the reference and generate arrays of according size
+  innerTractionRefArray = zeros(1,nSamples);
+  rSpeedRefArray = zeros(1,nSamples);
   i=1;
   while i < nSamples
     tic %Begins the first strike of the clock.
@@ -147,7 +149,6 @@ function [time, reference, output, input, innerTractionRefArray, rSpeedRefArray]
   end
 end
 \end{matlabcode}
-
 \clearpage
 \begin{matlabcode}
 %main.m
