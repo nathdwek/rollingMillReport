@@ -165,11 +165,17 @@ Fortunately, figure~\ref{fig:totalOut_k_2_t_3}
   \caption{Operation of the rolling mill. ${K_p}_{outer} = 2$.\label{fig:totalOut_k_2_t_3}}
 \end{figure}
 shows that values \ref{eqn:final_begin} - \ref{eqn:final_end}
-\begin{figure*}[htbp]
+\begin{figure*}[htb]
 \begin{align}
   {K_p}_{inner} &= -0.14\label{eqn:final_begin}\\
   {K_p}_{outer} &= 2\\
   K_i &= 4.2\label{eqn:final_end}
 \end{align}
 \end{figure*}
-along with an initial ramp on the traction provide an acceptable overshoot and sufficient damping.
+along with an initial ramp on the traction provide an acceptable overshoot and sufficient damping. Figure~\ref{fig:totalCurr_k_2_t_3_ramp}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width = \textwidth]{totalCurr_k_2_t_3_ramp.pdf}
+  \caption{Actuators values during operation with the final controller\label{fig:totalCurr_k_2_t_3_ramp}}
+\end{figure}
+finishes the validation this design by showing that the actuators do not go into saturation and are reasonably sollicitated during normal operation.
