@@ -21,7 +21,7 @@ The master motor is the one that pulls the strip and winds it up on a spool. The
 \end{table}
 
 \section{Identification of the Transfer Function}
-The transfer function of the left motor is identified with a least square approximation using matlab. To do this, the measured velocity is sampled for an input step between the setpoints, since that is the region where we want to linearize the behaviour of the motor. We choose to fit the system with a first order transfer function which is common for a DC motor with big inertial load.
+The transfer function of the left motor is identified with a least square approximation using matlab. To do this, the measured velocity is sampled for an input step between the setpoints, since that is the region where we want to linearise the behaviour of the motor. We choose to fit the system with a first order transfer function which is common for a DC motor with big inertial load.
 
 Figure \ref{fig:LM_id} shows the measured and fitted step responses. We see that the system is indeed heavily dominated by a single slow real pole, and that it is well approximated by transfer function \ref{eq:LM_TF}.
 
@@ -89,10 +89,10 @@ show the result of simulink simulations for several values of $K_P$. We see that
 
 \FloatBarrier
 \section{Tuning of the PI Controller}
-Figures \ref{fig:LM_KP050} -- \ref{fig:LM_KP200} show experimental runs of the master motor with different values of $K_P$. Based on these measurements $K_P = 1.44$ was chosen. $K_P = 0.5$ has a longer settling time with a larger overshoot than $K_p = 1.44$, and $K_P = 0.5$ has a longer, higher overshoot.  Since $\frac{K_I}{K_P} = 0.294$, $K_I = 0.3954$. None of the simulations have overshoot while all the practical experiments do. This is because the transfer function of the motor was reduced to a first order system while in practice it behaves as a non linear system of higher order.
+Figures \ref{fig:LM_KP050} -- \ref{fig:LM_KP200} show experimental runs of the master motor with different values of $K_P$. Based on these measurements $K_P = 2$ was chosen. $K_P = 0.5$ has a longer settling time with a larger overshoot than $K_p = 2$, and $K_P = 0.5$ has a longer, higher overshoot.  Since $\frac{K_I}{K_P} = 0.294$, $K_I = 0.588$. None of the simulations have overshoot while all the practical experiments do. This is because the transfer function of the motor was reduced to a first order system while in practice it behaves as a non linear system of higher order.
 \begin{figure}[htbp]
 \centering
-\includegraphics[width = .7\textwidth]{pics/LM_KP050a.png}
+\includegraphics[width = .7\textwidth]{pics/LM_KP050.png}
 \caption{Response of the left motor behaviour for $K_p = 0.5$ to the red curve as input.}
 \label{fig:LM_KP050}
 \end{figure}
@@ -106,7 +106,7 @@ Figures \ref{fig:LM_KP050} -- \ref{fig:LM_KP200} show experimental runs of the m
 %
 \begin{figure}[htbp]
 \centering
-\includegraphics[width = .7\textwidth]{pics/LM_KP200.png}
+\includegraphics[width = \textwidth]{pics/LM_KP200.png}
 \caption{Response of the left motor behaviour for $K_p = 2$ to the red curve as input.}
 \label{fig:LM_KP200}
 \end{figure}
@@ -115,7 +115,7 @@ We observe that we indeed obtain zero steady state error, and that disturbances 
 \section{Conclusion}
 We decide to control the master motor with a PI controller and the following values:
 \begin{align*}
-	K_P = 1.44
-	K_I = 0.3954
+	K_P &= 2 \\
+	K_I &= 0.588
 \end{align*}
 This allows us to generate a steady, precise master speed around which we will then modulate the slave speed in order to control the traction of the metallic strip. In the next chapter, we will identify and design a controller for the slave motor, which will serve as an inner loop for the traction control.

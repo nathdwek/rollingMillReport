@@ -1,7 +1,7 @@
 In this chapter, we will identify and design a controller for the slave motor of the rolling mill. The process is analogous to the master motor, first the motor is identified around the operating point, then a controller is designed which is then simulated and experimentally tested. The reference of the slave motor is the output of the traction controller and the slave motor should thus have good dynamic reference tracking.
 
 \section{Slave Motor}
-The right motor is chosen as the slave motor, for the same reason that the left motor was chosen as the master. Figure \ref{fig:RM_RPM_curr} shows the motor's static characteristic and table \ref{tab:RM_operating_region} shows the currents for different operating points.
+The right motor is chosen as the slave motor, the reasoning behind this was already explained in chapter \ref{chap:masterMotor}. Figure \ref{fig:RM_RPM_curr} shows the motor's static characteristic and table \ref{tab:RM_operating_region} shows the currents for different operating points.
 
 \begin{figure}[htbp]
 \centering
@@ -12,7 +12,7 @@ The right motor is chosen as the slave motor, for the same reason that the left 
 
 \begin{table}[H]
 	\centering
-		\begin{tabular}{lr}
+		\begin{tabular}{rr}
         \toprule
 			Armature current [A] & Angular velocity [RPM] \\ \midrule
             5.4 & 244 \\
