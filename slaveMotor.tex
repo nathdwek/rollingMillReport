@@ -74,8 +74,6 @@ $K = 3$ is chosen since higher gains introduce the risk of putting the actuator 
 \label{fig:RM_K4_SIM}
 \end{figure}
 
-
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width = \textwidth]{pics/RM_K2.png}
@@ -101,4 +99,8 @@ $K = 3$ is chosen since higher gains introduce the risk of putting the actuator 
 \section{Conclusions}
 A proportional controller was chosen to obtain good reference properties. In a cascade architecture, the steady state error of intern signals is unimportant (but those then need to be monitored along with their reference), so we do not need to introduce an integrator in the controller, which would slow down the response. The outer loop will adjust the slave speed reference in order to obtain zero steady state error on the traction.
 
-As we did for the master motor, the behaviour was identified using a step between two operating points. Using this approximated, transfer function, the controller gain is tuned using simulations and then real-world experiments. Finally a gain of $K = 3$ is selected. We will now design the outer loop controller which will generate the slave speed reference.
+As we did for the master motor, the behaviour was identified using a step between two operating points. Using this approximated, transfer function, the controller gain is tuned using simulations and then real-world experiments. Finally a gain of $K = 3$ is selected. We will now design the outer loop controller which will generate the slave speed reference. In order to do this, we will need a good estimation of the closed loop pole of the slave loop. This approximation can be found using a root locus, as we did to design the controller, but it is better to also have an experimental value, both to verify the design and to increase the accuracy of the rest of the calculations. Using the same method as we did in the beginning of this chapter, we find that the closed loop transfer function of the slave motor can be approximated by \ref{eqn:slave}
+\begin{align*}
+	Slave(s) &= \frac{3.9442}{s + 4.118}\\
+					 &= \frac{0.9577}{0.2428s + 1}\numberthis\label{eqn:slave}
+\end{align*}
