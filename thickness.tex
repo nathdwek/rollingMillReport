@@ -1,22 +1,22 @@
 In this section some considerations will be made about the more advanced objective. Since it is not attainable in the course of five lab sessions only some theoretical reflections will be made. The more advanced objective was to be able to control the output thickness of the metallic strip.
 
 \section{Workings of the Complete Rolling Mill Plant}
-The full workings of the mill are as follows: one motor unwinds the metal strip from a spool. The metal strip passes between two cylinders driven by a second motor. The metal is compressed between these too cylinders and is subsequently wound up by the third motor. The thickness is mainly controlled by the distance between the two rolls but also depends the other parameters of the plant in a non linear way. This distance can be controlled manually by a crank.
+The full workings of the mill are as follows: one motor unwinds the metal strip from a spool. The metal strip passes between two cylinders driven by a second motor. The metal is compressed between these too cylinders and is subsequently wound up by the third motor. The thickness is mainly controlled by the distance between the two rolls but also depends on the other parameters of the plant in a non linear way. This distance can be controlled manually by a crank.
 
-We have three motors as actuators, one manual setting, and multiple sensors:
+We have three motors as actuators, one manual setting for the middle rolls spacing, and multiple sensors:
 \begin{itemize}
-\item Thickness sensor before the rolls
-\item Thickness sensor after the rolls
-\item Traction sensor before the rolls
-\item Traction sensor after the rolls
+\item Thickness sensor before/after the rolls
+\item Traction sensor before/after the rolls
 \item Velocity sensors for each of the motors
 \item Rolling force sensor
 \end{itemize}
 The technical reason the objective is not attainable is that there are not enough DAC ports to control every motor independently. In terms of required research and time, this project would also be more fitted as a master thesis. Still, in the following, we will present a possible approach to try to control the thickness of the metallic strip.
 
 \section{Controller considerations}
-First, the plant has to be biased around a setpoint depending on the desired output thickness. The bias parameters are the master speed, which is now the speed of the middle pair of rolls, the spacing between the middle rolls and the traction left and right of the middle pair of rolls. Those biasing parameters can be found in a table describing the rolling mill. Around this setpoint, the thickness has to be controlled using small signal variations of the left and right traction.
+First, the plant has to be biased around a setpoint depending on the desired output thickness. The bias parameters are the master speed, which is now the speed of the middle pair of rolls, the spacing between the middle rolls and the traction left and right of the middle pair of rolls. For a given desired output thickness, those biasing parameters can be found in a table describing the rolling mill. Around this setpoint, the thickness has to be controlled using small signal variations of the left and right traction.
 
-To control the thickness, one should use a cascade controller on top of the traction controller we already designed during this report. However, the existing controller must be adapted to use the middle motor as master motor, and duplicated in order to independently control the left and right traction. From there on, one has to see if it is possible to again simplify the controlling scheme by fixing a traction on a steady value and only controlling the other one around a master value. A worse case would be that both tractions have to be dynamically controlled simultaneously in order to ensure the plant works properly. In the worst case, the traction variations needed to control the thickness are so large that the speed setpoint has to be changed during the operation. In that case, the controller has to implement a lookup table in order to control the non linear parameters.
+To control the thickness, one should use a cascade controller on top of the traction controller we already designed during this report. However, the existing controller must be adapted to use the middle motor as master motor, and duplicated in order to independently control the left and right traction.
 
-With such a setup, it should be at least possible to control the thickness of the metallic strip around a constant reference. However, as we showed, tracking a dynamic reference would be an even more advanced requirement due to the heavy non linearity of the plant. However, there are already ports available to control the spacing of the middle rolls during operation rather than using a manual crank, which should make this possible.
+From there on, one has to see if it is possible to again simplify the controlling scheme by fixing a traction on a steady value and only controlling the other one around a master value. A worse case would be that both tractions have to be dynamically controlled simultaneously in order to ensure the plant works properly. In the worst case, the traction variations needed to control the thickness are so large that the speed setpoint has to be changed during the operation. In that case, the controller has to implement a lookup table in order to control the non linear parameters.
+
+With such a setup, it should be at least possible to control the thickness of the metallic strip around a constant reference. As we showed, tracking a dynamic reference would be an even more advanced requirement due to the heavy non linearity of the plant. However, there are already ports available to control the spacing of the middle rolls while in operation rather than using a manual crank. Using this extra dynamic input should make thickness reference tracking possible, using lookup tables and the work presented in this report.
