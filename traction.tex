@@ -119,7 +119,7 @@ With that in mind, the closed loop poles of the inner traction loop are given by
 
 On figure \ref{fig:rmTracLocus} we choose ${K_p}_{inner} \lessapprox 0.15$ to obtain the fastest possible real poles for the inner loop. This yields a pair of real poles around $-2$. There is now left to determine the gains of the outer PI, given those inner loop poles to complete the controller design of our rolling mill.
 
-To do so, we use the classical approach of cancelling the slowest pole in the plant with the zero from the PI, and then determining a first ${K_p}_{outer}$ with a root locus. The resulting plot is shown in figure \ref{fig:rlocus_OuterTrac}.
+To do so, we use the classical approach of canceling the slowest pole in the plant with the zero from the PI, and then determining a first ${K_p}_{outer}$ with a root locus. The resulting plot is shown in figure \ref{fig:rlocus_OuterTrac}.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width = \textwidth]{rlocus_outerTrac.pdf}
@@ -178,4 +178,5 @@ along with an initial ramp on the traction provide an acceptable overshoot and s
   \includegraphics[width = \textwidth]{totalCurr_k_2_t_3_ramp.pdf}
   \caption{Actuators values during operation with the final controller\label{fig:totalCurr_k_2_t_3_ramp}}
 \end{figure}
-finishes the validation this design by showing that the actuators do not go into saturation and are reasonably sollicitated during normal operation.
+finishes the validation of this design by showing that the actuators do not go into saturation and are reasonably sollicitated during normal operation.
+
